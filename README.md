@@ -1,4 +1,3 @@
 WebSever
 ========
-
-Reverse proxy sever == web sever
+JerryRat ahead of TomCat.
