@@ -4,12 +4,12 @@
         <server>
             <listen>80</listen>
             <static>
-                <root>/forum/static</root>
+                <root>/static</root>
                 <static-file-pattern>*.js, *.jpeg, *.gif, *.jpg, *.css</static-file-pattern>
             </static>
         </server>
         <dynamic-proxy-pass>
-            <url-pattern>/forum</url-pattern>
+            <url-pattern>./dynamic</url-pattern>
             <upstream-url>http://10.10.5.126:8080</upstream-url>
         </dynamic-proxy-pass>
     </http>

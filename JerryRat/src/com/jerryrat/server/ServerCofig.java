@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class ServerCofig {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    private File file = new File("/home/anil/proxyProject/JerryRat-JR/JerryRat/src/com/jerryrat/server/server.xml");
+    private File file = new File("./src/com/jerryrat/server/server.xml");
 
     public String getContent(String tagName) throws ParserConfigurationException, IOException, SAXException {
         Element root = getElement();

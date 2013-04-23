@@ -16,7 +16,7 @@ public class ServerCofigTest {
 
     @Test
     public void shouldGetStaticUrl() throws IOException, SAXException, ParserConfigurationException {
-        assertThat(serverCofig.getContent("root"), IsEqual.equalTo("/forum/static"));
+        assertThat(serverCofig.getContent("root"), IsEqual.equalTo("./static"));
     }
 
     @Test
@@ -26,6 +26,6 @@ public class ServerCofigTest {
 
     @Test
     public void shouldGetDynamicUrl() throws IOException, SAXException, ParserConfigurationException {
-       assertThat(serverCofig.getContent("url-pattern"), IsEqual.equalTo("/forum"));
+       assertThat(serverCofig.getContent("url-pattern"), IsEqual.equalTo("./dynamic"));
     }
 }
