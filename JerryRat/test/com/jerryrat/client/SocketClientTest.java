@@ -1,13 +1,13 @@
 package com.jerryrat.client;
 
 
-import com.jerryrat.client.SocketClient;
 import com.jerryrat.server.SocketServer;
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import static org.junit.Assert.assertThat;
@@ -17,8 +17,8 @@ public class SocketClientTest {
     private SocketServer socketServer;
 
     @Before
-    public void setUp() {
-        socketServer = new SocketServer();
+    public void setUp() throws IOException {
+        socketServer = new SocketServer(new ServerSocket(8080));
         socketServer.run();
     }
 

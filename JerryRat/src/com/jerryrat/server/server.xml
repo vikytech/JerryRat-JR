@@ -4,7 +4,7 @@
         <server>
             <listen>80</listen>
             <static>
-                <root>/forum/src/main/webapp/static/</root>
+                <root>/forum/static</root>
                 <static-file-pattern>*.js, *.jpeg, *.gif, *.jpg, *.css</static-file-pattern>
             </static>
         </server>
