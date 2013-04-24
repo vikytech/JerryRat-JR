@@ -10,14 +10,14 @@ public class SocketServerTest {
     @Test
     public void shouldConnectToTheServer() throws Exception {
         SocketServer mockServer = Mockito.mock(SocketServer.class);
-        Mockito.doNothing().when(mockServer).server();
-        mockServer.server();
-        Mockito.verify(mockServer).server();
+        Mockito.doNothing().when(mockServer).run();
+        mockServer.run();
+        Mockito.verify(mockServer).run();
     }
     @Test
     public void shouldNotConnectToTheServer() throws Exception {
         SocketServer server = new SocketServer(new ServerSocket(1234));
-        server.server();
+        server.run();
 
     }
 

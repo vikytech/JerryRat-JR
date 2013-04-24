@@ -5,14 +5,22 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
-public class SocketServer extends Thread {
+public class SocketServer implements Runnable {
     private ServerSocket listenSocket;
 
     public SocketServer(ServerSocket serverSocket) {
         listenSocket = serverSocket;
     }
-
-    public void server() throws Exception {
+    public void run() {
+        while(true){
+            try {
+                server();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private  void server() throws Exception {
         Socket connectionSocket = listenSocket.accept();
 
         FileInputStream fileInputStream;
@@ -21,31 +29,31 @@ public class SocketServer extends Thread {
 
         String requestMessageLine = request.readLine();
         StringTokenizer tokenizedLine = new StringTokenizer(requestMessageLine);
-
-        if (tokenizedLine.nextToken().equals("GET")) {
-            String fileName = tokenizedLine.nextToken();
-            fileName = "." + fileName;
-            try {
+        try {
+            if (tokenizedLine.nextToken().equals("GET")) {
+                String fileName = tokenizedLine.nextToken();
+                fileName = "." + fileName;
                 fileInputStream = new FileInputStream(fileName);
                 sendResponse(fileInputStream, response, fileName);
-            } catch (FileNotFoundException notFound) {
-                sendNotFoundResponse(response);
-            } finally {
-                connectionSocket.close();
             }
+        } catch (Exception notFound) {
+            sendNotFoundResponse(response);
+        } finally {
+            connectionSocket.close();
         }
+
     }
 
     private void sendNotFoundResponse(DataOutputStream response) throws IOException {
-        String statusLine = "HTTP/1.0 404 Not Found\r\n";
-        String contentTypeLine = "Content-type: text/html\r\n";
-        String message = "<HTML>" +
+        String statusLine = "HTTP/1.0 404 Not Found";
+        String contentTypeLine = "Content-type: " + "text/html\r\n";
+        String entityBody = "<HTML>" +
                 "<HEAD><TITLE>Not Found</TITLE></HEAD>" +
-                "<BODY><b>Not Found<b></BODY></HTML>";
+                "<BODY><b>Not Found</b></BODY></HTML>";
 
-        response.writeBytes(statusLine);
+        response.writeBytes(entityBody);
         response.writeBytes(contentTypeLine);
-        response.writeBytes(message);
+        response.writeBytes(statusLine);
     }
 
     private void sendResponse(FileInputStream request, DataOutputStream response, String fileName) throws Exception {
@@ -53,11 +61,6 @@ public class SocketServer extends Thread {
         if (fileName.startsWith(serverCofig.getContent("root"))) {
             String statusLine = "HTTP/1.0 200 OK\r\n";
             response.writeBytes(statusLine);
-
-            if (fileName.endsWith(".jpg") || fileName.endsWith(".gif")) {
-                response.writeBytes("Content-Type: image\r\n");
-                response.writeBytes("Server: JerryRat-JR\r\n");
-            }
         }
         sendBytes(request, response);
     }

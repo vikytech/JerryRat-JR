@@ -9,6 +9,6 @@ public class RunRat {
 
     public static void main(String[] args) throws Exception {
         SocketServer socketServer = new SocketServer(new ServerSocket(9090));
-        socketServer.server();
+        socketServer.run();
     }
 }
