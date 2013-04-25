@@ -23,7 +23,6 @@ public class SocketServer implements Runnable {
 
     void server() throws Exception {
         Socket connectionSocket = listenSocket.accept();
-        FileInputStream fileInputStream;
         DataOutputStream response = new DataOutputStream(connectionSocket.getOutputStream());
         BufferedReader request = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
         String requestMessageLine = request.readLine();
@@ -33,7 +32,7 @@ public class SocketServer implements Runnable {
             if (tokenizedLine.nextToken().equals("GET")) {
                 handleRequest(response, tokenizedLine);
             }
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
         } catch (FileNotFoundException notFound) {
             sendNotFoundResponse(response);
         } finally {
@@ -45,7 +44,7 @@ public class SocketServer implements Runnable {
         String fileName;
         FileInputStream fileInputStream;
         fileName = tokenizedLine.nextToken();
-        if (isStatic("." + fileName)) {
+        if (isStatic(fileName)) {
             fileInputStream = new FileInputStream("." + fileName);
             sendBytes(fileInputStream, response);
         } else if (isDynamic(fileName)) {
@@ -63,7 +62,7 @@ public class SocketServer implements Runnable {
 
     boolean isStatic(String fileName) throws Exception {
         ServerCofig serverCofig = new ServerCofig();
-        if (fileName.substring(1, 8).equals(serverCofig.getContent("root"))) {
+        if (fileName.startsWith(serverCofig.getContent("root"))) {
             return true;
         }
         return false;
@@ -79,7 +78,7 @@ public class SocketServer implements Runnable {
 
     void sendBytes(InputStream fileInputStream, OutputStream response) throws Exception {
         byte[] buffer = new byte[1024];
-        int bytes = 0;
+        int bytes;
         while ((bytes = fileInputStream.read(buffer)) != -1) {
             response.write(buffer, 0, bytes);
         }

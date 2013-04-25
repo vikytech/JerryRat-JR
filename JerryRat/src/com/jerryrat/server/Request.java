@@ -1,8 +1,5 @@
 package com.jerryrat.server;
 
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -22,13 +19,9 @@ public class Request {
         writeContent(response, socket);
     }
 
-    private Socket getNewSocket(Socket socket) throws ParserConfigurationException, SAXException {
+    private Socket getNewSocket(Socket socket) throws Exception {
         try {
-            ServerCofig serverCofig = new ServerCofig();
-            String[] split = serverCofig.getContent("upstream-url").split(":");
-            InetAddress addr = InetAddress.getByName(split[0]);
-            int port = Integer.parseInt(split[1]);
-            socket = new Socket(addr, port);
+            socket = getSocket();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -37,10 +30,18 @@ public class Request {
         return socket;
     }
 
+    private Socket getSocket() throws Exception {
+        ServerCofig serverCofig = new ServerCofig();
+        String[] split = serverCofig.getContent("upstream-url").split(":");
+        InetAddress address = InetAddress.getByName(split[0]);
+        int port = Integer.parseInt(split[1]);
+        return new Socket(address, port);
+    }
+
     void writeContent(DataOutputStream response, Socket socket) {
         BufferedReader rd;
+        String str;
         try {
-            String str;
             rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while ((str = rd.readLine()) != null) {
                 System.out.println(str);
