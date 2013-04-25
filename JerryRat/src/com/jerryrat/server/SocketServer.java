@@ -23,6 +23,7 @@ public class SocketServer implements Runnable {
 
     void server() throws Exception {
         Socket connectionSocket = listenSocket.accept();
+        FileInputStream fileInputStream;
         DataOutputStream response = new DataOutputStream(connectionSocket.getOutputStream());
         BufferedReader request = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
         String requestMessageLine = request.readLine();
@@ -32,7 +33,7 @@ public class SocketServer implements Runnable {
             if (tokenizedLine.nextToken().equals("GET")) {
                 handleRequest(response, tokenizedLine);
             }
-        } catch (NullPointerException ignored) {
+        } catch (NullPointerException e) {
         } catch (FileNotFoundException notFound) {
             sendNotFoundResponse(response);
         } finally {
@@ -62,7 +63,7 @@ public class SocketServer implements Runnable {
 
     boolean isStatic(String fileName) throws Exception {
         ServerCofig serverCofig = new ServerCofig();
-        if (fileName.startsWith(serverCofig.getContent("root"))) {
+        if (fileName.substring(1, 8).equals(serverCofig.getContent("root"))) {
             return true;
         }
         return false;
