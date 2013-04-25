@@ -63,7 +63,7 @@ public class SocketServer implements Runnable {
 
     boolean isStatic(String fileName) throws Exception {
         ServerCofig serverCofig = new ServerCofig();
-        if (fileName.substring(1, 8).equals(serverCofig.getContent("root"))) {
+        if (fileName.startsWith(serverCofig.getContent("root"))) {
             return true;
         }
         return false;
