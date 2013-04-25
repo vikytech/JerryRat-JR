@@ -20,12 +20,7 @@ public class ServerCofigTest {
     }
 
     @Test
-    public void shouldGetStaticFilePattern() throws IOException, SAXException, ParserConfigurationException {
-        assertThat(serverCofig.getContent("static-file-pattern"), IsEqual.equalTo("*.js, *.jpeg, *.gif, *.jpg, *.css"));
-    }
-
-    @Test
     public void shouldGetDynamicUrl() throws IOException, SAXException, ParserConfigurationException {
-       assertThat(serverCofig.getContent("url-pattern"), IsEqual.equalTo("./dynamic"));
+       assertThat(serverCofig.getContent("url-pattern"), IsEqual.equalTo("/dynamic"));
     }
 }
