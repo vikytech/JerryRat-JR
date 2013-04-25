@@ -17,13 +17,13 @@ public class SocketServer implements Runnable {
             try {
                 server();
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
     void server() throws Exception {
         Socket connectionSocket = listenSocket.accept();
-        FileInputStream fileInputStream;
         DataOutputStream response = new DataOutputStream(connectionSocket.getOutputStream());
         BufferedReader request = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
         String requestMessageLine = request.readLine();
@@ -63,18 +63,12 @@ public class SocketServer implements Runnable {
 
     boolean isStatic(String fileName) throws Exception {
         ServerCofig serverCofig = new ServerCofig();
-        if (fileName.startsWith(serverCofig.getContent("root"))) {
-            return true;
-        }
-        return false;
+        return fileName.startsWith(serverCofig.getContent("root"));
     }
 
     private boolean isDynamic(String fileName) throws Exception {
         ServerCofig serverCofig = new ServerCofig();
-        if (fileName.startsWith(serverCofig.getContent("url-pattern"))) {
-            return true;
-        }
-        return false;
+        return fileName.startsWith(serverCofig.getContent("url-pattern"));
     }
 
     void sendBytes(InputStream fileInputStream, OutputStream response) throws Exception {
