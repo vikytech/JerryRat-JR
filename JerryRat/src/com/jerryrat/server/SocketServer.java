@@ -17,12 +17,11 @@ public class SocketServer implements Runnable {
             try {
                 server();
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
 
-    private void server() throws Exception {
+    void server() throws Exception {
         Socket connectionSocket = listenSocket.accept();
         FileInputStream fileInputStream;
         DataOutputStream response = new DataOutputStream(connectionSocket.getOutputStream());
@@ -32,34 +31,53 @@ public class SocketServer implements Runnable {
         try {
             StringTokenizer tokenizedLine = new StringTokenizer(requestMessageLine);
             if (tokenizedLine.nextToken().equals("GET")) {
-                String fileName = tokenizedLine.nextToken();
-                fileName = "." + fileName;
-                fileInputStream = new FileInputStream(fileName);
-                sendResponse(fileInputStream, response, fileName);
+                handleRequest(response, tokenizedLine);
             }
         } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (Exception notFound) {
+        } catch (FileNotFoundException notFound) {
             sendNotFoundResponse(response);
         } finally {
             connectionSocket.close();
         }
     }
 
-    private void sendNotFoundResponse(DataOutputStream response) throws IOException {
+    void handleRequest(DataOutputStream response, StringTokenizer tokenizedLine) throws Exception {
+        String fileName;
+        FileInputStream fileInputStream;
+        fileName = tokenizedLine.nextToken();
+        if (isStatic("." + fileName)) {
+            fileInputStream = new FileInputStream("." + fileName);
+            sendBytes(fileInputStream, response);
+        } else if (isDynamic(fileName)) {
+            Request URL = new Request(fileName);
+            URL.send(response);
+        } else throw new FileNotFoundException();
+    }
+
+    void sendNotFoundResponse(DataOutputStream response) throws IOException {
         String entityBody = "<HTML>" +
                 "<HEAD><TITLE>Not Found</TITLE></HEAD>" +
                 "<BODY><b>Not Found</b></BODY></HTML>";
         response.writeBytes(entityBody);
     }
 
-    private void sendResponse(FileInputStream request, DataOutputStream response, String fileName) throws Exception {
+    boolean isStatic(String fileName) throws Exception {
         ServerCofig serverCofig = new ServerCofig();
-        if (fileName.substring(1, 8).equals(serverCofig.getContent("root")))
-            sendBytes(request, response);
+        if (fileName.substring(1, 8).equals(serverCofig.getContent("root"))) {
+            return true;
+        }
+        return false;
     }
 
-    private void sendBytes(FileInputStream fileInputStream, DataOutputStream response) throws Exception {
+    private boolean isDynamic(String fileName) throws Exception {
+        ServerCofig serverCofig = new ServerCofig();
+        if (fileName.startsWith(serverCofig.getContent("url-pattern"))) {
+            return true;
+        }
+        return false;
+    }
+
+    void sendBytes(InputStream fileInputStream, OutputStream response) throws Exception {
         byte[] buffer = new byte[1024];
         int bytes = 0;
         while ((bytes = fileInputStream.read(buffer)) != -1) {
