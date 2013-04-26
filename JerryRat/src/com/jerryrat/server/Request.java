@@ -6,26 +6,28 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Request {
-    private String connectAddress;
+    String connectAddress;
+    String method;
 
-    public Request(String connectAddress) {
+    public Request(String connectAddress, String method) {
         this.connectAddress = connectAddress;
+        this.method = method;
     }
 
-    public void send(DataOutputStream response) throws Exception {
+    public String send() throws Exception {
         Socket socket = null;
-        sendData(getNewSocket());
-        writeContent(response, socket);
+        socket = getNewSocket(socket);
+        sendData(socket);
+        return writeContent(socket);
     }
 
-    private Socket getNewSocket() throws Exception {
-        Socket socket = null;
+    private Socket getNewSocket(Socket socket) throws Exception {
         try {
             ServerCofig serverCofig = new ServerCofig();
             String[] split = serverCofig.getContent("upstream-url").split(":");
             InetAddress addr = InetAddress.getByName(split[0]);
             int port = Integer.parseInt(split[1]);
-            return new Socket(addr, port);
+            socket = new Socket(addr, port);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -34,26 +36,29 @@ public class Request {
         return socket;
     }
 
-    void writeContent(DataOutputStream response, Socket socket) {
+    String writeContent(Socket socket) {
         BufferedReader rd;
+        String str = null;
+        StringBuilder stringBuilder = new StringBuilder();
         try {
-            String str;
             rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while ((str = rd.readLine()) != null) {
-                System.out.println(str);
-                response.writeBytes(str + "\n");
+                System.out.println(str + "\n");
+                stringBuilder.append(str).append("\n");
             }
             rd.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("ActualString >>>>>" + stringBuilder.append("\n").toString());
+        return stringBuilder.append("\n").toString();
     }
 
     void sendData(Socket socket) {
         try {
             assert socket != null;
             BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            wr.write("GET " + connectAddress + " HTTP/1.0");
+            wr.write(method + " " + connectAddress + " HTTP/1.0");
             wr.newLine();
             wr.write("\nUser-Agent: Wget/1.9.1");
             wr.flush();
