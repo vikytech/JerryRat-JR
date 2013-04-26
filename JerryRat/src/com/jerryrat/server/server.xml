@@ -3,7 +3,7 @@
     <http>
         <server>
             <static>
-                <root>/static</root>
+                <root>/forum/static</root>
             </static>
         </server>
         <dynamic>

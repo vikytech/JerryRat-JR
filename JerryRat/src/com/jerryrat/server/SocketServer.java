@@ -57,11 +57,11 @@ public class SocketServer implements Runnable {
             sendBytes(fileInputStream, response);
         } else if (isDynamic(fileName)) {
             Request URL = new Request(fileName, method);
-            FileWriter writer = new FileWriter("./static/responseFile.jsp");
+            FileWriter writer = new FileWriter("./forum/static/responseFile.jsp");
             BufferedWriter printer = new BufferedWriter(writer);
             printer.write(URL.send());
             printer.close();
-            fileInputStream = new FileInputStream("./static/responseFile.jsp");
+            fileInputStream = new FileInputStream("./forum/static/responseFile.jsp");
             sendBytes(fileInputStream, response);
         } else throw new FileNotFoundException();
     }
